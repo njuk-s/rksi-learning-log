@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление · {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card form-card mx-auto border-danger">
+  <div class="card-body p-4">
+    <h1 class="h4 mb-3">Удалить {{ kind }}?</h1>
+    <p class="mb-1"><strong class="text-break-all">«{{ object }}»</strong></p>
+    <p class="meta mb-4">{{ details }} Это действие нельзя отменить.</p>
+    <form method="post" class="d-flex flex-wrap">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger mr-2 mb-2">Да, удалить</button>
+      <a class="btn btn-outline-secondary mb-2" href="{{ cancel_url }}">Отмена</a>
+    </form>
+  </div>
+</div>
+{% endblock content %}

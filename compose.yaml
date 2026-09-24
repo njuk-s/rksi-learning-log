@@ -1,0 +1,32 @@
+services:
+  web:
+    # Собрать образ по Dockerfile из текущего каталога.
+    build: .
+    # Автоматически запускать контейнер после перезагрузки сервера.
+    restart: unless-stopped
+    # Настройки сервера берутся из .env (см. .env.example).
+    # Без .env проект тоже запустится - в режиме локальной проверки.
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # База SQLite лежит на именованном томе и переживает пересоздание контейнера.
+      SQLITE_PATH: ${SQLITE_PATH:-/app/data/db.sqlite3}
+    # Миграции, создание администратора и запуск Gunicorn - в start.sh.
+    command: ["sh", "start.sh"]
+    ports:
+      # Адрес и внешний порт берутся из .env.
+      - "${APP_BIND_IP:-127.0.0.1}:${APP_PORT:-8000}:8000"
+    volumes:
+      - learning_log_data:/app/data
+    healthcheck:
+      # Регулярно проверять, что Django отвечает внутри контейнера.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  # Именованный том не удаляется при обычном пересоздании контейнера.
+  learning_log_data:

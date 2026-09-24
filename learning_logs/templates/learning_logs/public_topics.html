@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Открытые темы · {{ block.super }}{% endblock %}
+
+{% block page_header %}
+<div class="page-head">
+  <div>
+    <h1>Открытые темы</h1>
+    <p class="lead">Темы, которые авторы разрешили читать всем. Изменять их может только автор.</p>
+  </div>
+</div>
+{% endblock page_header %}
+
+{% block content %}
+{% if topics %}
+  <div class="row">
+    {% for topic in topics %}
+      <div class="col-sm-6 col-lg-4 mb-3">
+        {% include 'learning_logs/_topic_card.html' with show_owner=True %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">
+    <span class="icon" aria-hidden="true">🌐</span>
+    <p class="mb-0">Открытых тем пока нет.</p>
+  </div>
+{% endif %}
+{% endblock content %}

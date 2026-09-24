@@ -1,0 +1,33 @@
+# Blueprint для бесплатного развёртывания на Render (render.com).
+# Render соберёт образ по Dockerfile и выдаст адрес https://<имя>.onrender.com.
+# База данных - внешний PostgreSQL (например, бесплатный Neon), см. README.md.
+services:
+  - type: web
+    name: learning-log
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /healthz/
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        sync: false
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: SEED_DEMO
+        value: "True"
+      - key: DEMO_PASSWORD
+        sync: false
+      # Render сам отдаёт сайт по HTTPS, поэтому HTTP можно смело перенаправлять.
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DJANGO_HSTS_SECONDS
+        value: "31536000"
+      - key: WEB_CONCURRENCY
+        value: "2"

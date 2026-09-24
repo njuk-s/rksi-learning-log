@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои темы · {{ block.super }}{% endblock %}
+
+{% block page_header %}
+<div class="page-head">
+  <div>
+    <h1>Мои темы</h1>
+    <p class="lead">Темы видите только вы, если не сделали их открытыми.</p>
+  </div>
+  <a class="btn btn-primary" href="{% url 'learning_logs:new_topic' %}">+ Новая тема</a>
+</div>
+{% endblock page_header %}
+
+{% block content %}
+<form method="get" class="mb-4" role="search">
+  <div class="input-group">
+    <input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Поиск по темам и записям"
+           aria-label="Поиск по темам и записям">
+    <div class="input-group-append">
+      <button class="btn btn-outline-primary" type="submit">Найти</button>
+      {% if query %}<a class="btn btn-outline-secondary" href="{% url 'learning_logs:topics' %}">Сбросить</a>{% endif %}
+    </div>
+  </div>
+</form>
+
+{% if topics %}
+  <div class="row">
+    {% for topic in topics %}
+      <div class="col-sm-6 col-lg-4 mb-3">
+        {% include 'learning_logs/_topic_card.html' %}
+      </div>
+    {% endfor %}
+  </div>
+{% elif query %}
+  <div class="empty">
+    <span class="icon" aria-hidden="true">🔍</span>
+    <p class="mb-0">По запросу «{{ query }}» ничего не найдено.</p>
+  </div>
+{% else %}
+  <div class="empty">
+    <span class="icon" aria-hidden="true">📝</span>
+    <p class="mb-3">Тем пока нет.</p>
+    <a class="btn btn-primary" href="{% url 'learning_logs:new_topic' %}">Создать первую тему</a>
+  </div>
+{% endif %}
+{% endblock content %}

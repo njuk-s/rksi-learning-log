@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}{{ topic.text }} · {{ block.super }}{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-transparent px-0 mb-2">
+    {% if is_owner %}
+      <li class="breadcrumb-item"><a href="{% url 'learning_logs:topics' %}">Мои темы</a></li>
+    {% else %}
+      <li class="breadcrumb-item"><a href="{% url 'learning_logs:public_topics' %}">Открытые темы</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active text-truncate" aria-current="page">{{ topic.text }}</li>
+  </ol>
+</nav>
+<div class="page-head">
+  <div>
+    <h1>{{ topic.text }}</h1>
+    <p class="lead">
+      {% if topic.public %}🌐 Открытая тема{% else %}🔒 Личная тема{% endif %}
+      · автор {{ topic.owner.username }} · создана {{ topic.date_added|date:"j E Y" }}
+    </p>
+  </div>
+  {% if is_owner %}
+    <div class="d-flex flex-wrap">
+      <a class="btn btn-primary mr-2 mb-2" href="{% url 'learning_logs:new_entry' topic.id %}">+ Новая запись</a>
+      <a class="btn btn-outline-secondary mr-2 mb-2" href="{% url 'learning_logs:edit_topic' topic.id %}">Изменить</a>
+      <a class="btn btn-outline-danger mb-2" href="{% url 'learning_logs:delete_topic' topic.id %}">Удалить</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock page_header %}
+
+{% block content %}
+{% for entry in entries %}
+  <article class="card mb-3">
+    <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center">
+      <span class="meta">
+        {{ entry.date_added|date:"j E Y, H:i" }}
+        {% if entry.was_edited %}<span title="Изменена {{ entry.date_modified|date:'j E Y, H:i' }}">· изменена</span>{% endif %}
+      </span>
+      {% if is_owner %}
+        <span>
+          <a class="btn btn-sm btn-link" href="{% url 'learning_logs:edit_entry' entry.id %}">Изменить</a>
+          <a class="btn btn-sm btn-link text-danger" href="{% url 'learning_logs:delete_entry' entry.id %}">Удалить</a>
+        </span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <div class="entry-text">{{ entry.text }}</div>
+    </div>
+  </article>
+{% empty %}
+  <div class="empty">
+    <span class="icon" aria-hidden="true">✍️</span>
+    <p class="mb-3">В этой теме пока нет записей.</p>
+    {% if is_owner %}<a class="btn btn-primary" href="{% url 'learning_logs:new_entry' topic.id %}">Добавить первую запись</a>{% endif %}
+  </div>
+{% endfor %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+  <div class="d-flex justify-content-center mt-4">{% bootstrap_pagination page_obj %}</div>
+{% endif %}
+{% endblock content %}

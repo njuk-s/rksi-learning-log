@@ -1,0 +1,71 @@
+{% load bootstrap4 static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Learning Log - личный журнал того, что вы изучаете.">
+  <title>{% block title %}Learning Log{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
+  {% bootstrap_css %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  {% bootstrap_javascript jquery='full' %}
+</head>
+<body>
+{% with url_name=request.resolver_match.url_name %}
+<nav class="navbar navbar-expand-md navbar-light site-nav mb-4">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'learning_logs:index' %}">
+      <span class="brand-mark" aria-hidden="true">L</span>Learning Log</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Открыть меню">
+      <span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link{% if url_name == 'topics' %} active{% endif %}"
+                                  href="{% url 'learning_logs:topics' %}">Мои темы</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link{% if url_name == 'public_topics' %} active{% endif %}"
+                                href="{% url 'learning_logs:public_topics' %}">Открытые темы</a></li>
+      </ul>
+      <ul class="navbar-nav ml-auto align-items-md-center">
+        {% if user.is_authenticated %}
+          <li class="nav-item my-2 my-md-0 mr-md-2">
+            <span class="user-chip" title="Вы вошли как {{ user.username }}">👤 {{ user.username }}</span>
+          </li>
+          {% if user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Админка</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'users:password_change' %}">Пароль</a></li>
+          <li class="nav-item">
+            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="nav-link btn btn-link btn-logout">Выйти</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link{% if url_name == 'login' %} active{% endif %}"
+                                  href="{% url 'users:login' %}">Войти</a></li>
+          <li class="nav-item"><a class="btn btn-primary btn-sm ml-md-2 my-2 my-md-0"
+                                  href="{% url 'users:register' %}">Регистрация</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endwith %}
+
+<main role="main" class="container pb-5">
+  {% bootstrap_messages %}
+  {% block page_header %}{% endblock page_header %}
+  {% block content %}{% endblock content %}
+</main>
+
+<footer class="site-footer py-3">
+  <div class="container d-flex flex-wrap justify-content-between">
+    <span>Learning Log · учебный проект на Django</span>
+    <span>{% now "Y" %}</span>
+  </div>
+</footer>
+</body>
+</html>

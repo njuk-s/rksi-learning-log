@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Новая запись · {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card form-card mx-auto">
+  <div class="card-body p-4">
+    <h1 class="h3 mb-1">Новая запись</h1>
+    <p class="meta mb-4">Тема: <a href="{% url 'learning_logs:topic' topic.id %}">{{ topic.text }}</a></p>
+    <form method="post" action="{% url 'learning_logs:new_entry' topic.id %}" novalidate>
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <div class="d-flex flex-wrap">
+        {% bootstrap_button 'Добавить запись' button_type='submit' button_class='btn-primary mr-2 mb-2' %}
+        <a class="btn btn-outline-secondary mb-2" href="{% url 'learning_logs:topic' topic.id %}">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

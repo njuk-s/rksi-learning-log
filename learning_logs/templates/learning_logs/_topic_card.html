@@ -1,0 +1,15 @@
+<div class="card card-hover h-100">
+  <div class="card-body">
+    <h3 class="h6 card-title mb-2">
+      <a class="stretched-link text-dark" href="{% url 'learning_logs:topic' topic.id %}">{{ topic.text }}</a>
+    </h3>
+    <div class="meta">
+      <span class="badge badge-soft">{{ topic.entry_count }} зап.</span>
+      {% if topic.public %}<span class="badge badge-success ml-1">🌐 открыта</span>{% endif %}
+      {% if show_owner %}<span class="ml-1">· {{ topic.owner.username }}</span>{% endif %}
+    </div>
+    <div class="meta mt-2">
+      {% if topic.last_entry %}Последняя запись {{ topic.last_entry|date:"j E Y" }}{% else %}Записей пока нет{% endif %}
+    </div>
+  </div>
+</div>

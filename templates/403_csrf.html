@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Сессия устарела · {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="empty my-5">
+  <span class="icon" aria-hidden="true">⏳</span>
+  <h1 class="h3 text-dark">Форма устарела</h1>
+  <p class="mb-4">Обновите страницу и отправьте форму ещё раз.</p>
+  <a class="btn btn-primary" href="/">На главную</a>
+</div>
+{% endblock content %}

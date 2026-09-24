@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  <div class="page-head">
+    <div>
+      <h1>Привет, {{ user.username }}!</h1>
+      <p class="lead">Что нового вы узнали сегодня?</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'learning_logs:new_topic' %}">+ Новая тема</a>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-4"><div class="card stat"><div class="value">{{ topic_count }}</div><div class="label">тем</div></div></div>
+    <div class="col-4"><div class="card stat"><div class="value">{{ entry_count }}</div><div class="label">записей</div></div></div>
+    <div class="col-4"><div class="card stat"><div class="value">{{ public_count }}</div><div class="label">открытых</div></div></div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-baseline mb-3">
+    <h2 class="h5 mb-0">Недавние темы</h2>
+    <a href="{% url 'learning_logs:topics' %}">Все темы →</a>
+  </div>
+  {% if recent_topics %}
+    <div class="row">
+      {% for topic in recent_topics %}
+        <div class="col-md-4 mb-3">
+          {% include 'learning_logs/_topic_card.html' %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <span class="icon" aria-hidden="true">📝</span>
+      <p class="mb-3">У вас пока нет тем. Начните с того, что изучаете прямо сейчас.</p>
+      <a class="btn btn-primary" href="{% url 'learning_logs:new_topic' %}">Создать первую тему</a>
+    </div>
+  {% endif %}
+{% else %}
+  <section class="hero">
+    <h1>Журнал того, что вы изучаете</h1>
+    <p class="mb-4">Заведите темы, записывайте в них всё, что поняли, и возвращайтесь к своим знаниям в любой момент.
+      Темы видны только вам, пока вы сами не откроете их для всех.</p>
+    <a class="btn btn-light btn-lg mr-2 mb-2" href="{% url 'users:register' %}">Начать бесплатно</a>
+    <a class="btn btn-outline-light btn-lg mb-2" href="{% url 'users:login' %}">Войти</a>
+  </section>
+
+  <div class="row">
+    <div class="col-md-4 mb-3"><div class="card feature"><div class="card-body">
+      <div class="icon mb-2" aria-hidden="true">🗂️</div>
+      <h2 class="h6">Темы</h2>
+      <p class="meta mb-0">Отдельная тема на каждый предмет, книгу или навык.</p>
+    </div></div></div>
+    <div class="col-md-4 mb-3"><div class="card feature"><div class="card-body">
+      <div class="icon mb-2" aria-hidden="true">✍️</div>
+      <h2 class="h6">Записи</h2>
+      <p class="meta mb-0">Короткие заметки с датой: видно, как растут знания.</p>
+    </div></div></div>
+    <div class="col-md-4 mb-3"><div class="card feature"><div class="card-body">
+      <div class="icon mb-2" aria-hidden="true">🔒</div>
+      <h2 class="h6">Приватность</h2>
+      <p class="meta mb-0">Чужие темы недоступны даже по прямой ссылке. Открытые - только для чтения.</p>
+    </div></div></div>
+  </div>
+  <p class="text-center mt-3"><a href="{% url 'learning_logs:public_topics' %}">Посмотреть открытые темы →</a></p>
+{% endif %}
+{% endblock content %}

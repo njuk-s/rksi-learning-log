@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Вход · {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card form-narrow mx-auto">
+  <div class="card-body p-4">
+    <h1 class="h3 mb-1">Вход</h1>
+    <p class="meta mb-4">Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрируйтесь</a>.</p>
+    <form method="post" action="{% url 'users:login' %}" novalidate>
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <input type="hidden" name="next" value="{{ next }}">
+      {% bootstrap_button 'Войти' button_type='submit' button_class='btn-primary btn-block' %}
+    </form>
+  </div>
+</div>
+{% endblock content %}
