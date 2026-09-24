@@ -146,7 +146,7 @@ python manage.py test
    docker compose logs --tail=100 web
    ```
 
-   При каждом запуске контейнер сам применяет миграции (`start.sh`), статические файлы собираются при сборке образа.
+   При каждом запуске контейнер сам применяет миграции (`start.sh` → `manage.py prestart`), статические файлы собираются при сборке образа.
    Если в `.env` заданы `DJANGO_SUPERUSER_USERNAME` и `DJANGO_SUPERUSER_PASSWORD`, администратор создаётся автоматически;
    иначе создайте его вручную:
 
@@ -191,7 +191,7 @@ python manage.py test
 | `DJANGO_HSTS_SECONDS` | нет | Срок HSTS в секундах, по умолчанию 0 |
 | `DJANGO_TIME_ZONE` | нет | Часовой пояс, по умолчанию `Europe/Moscow` |
 | `APP_BIND_IP`, `APP_PORT` | нет | На каком адресе и порту Compose публикует контейнер (по умолчанию `127.0.0.1:8000`) |
-| `PORT`, `WEB_CONCURRENCY` | нет | Порт и число процессов Gunicorn внутри контейнера (по умолчанию 8000 и 2) |
+| `PORT`, `WEB_CONCURRENCY`, `GUNICORN_THREADS` | нет | Порт, число процессов и потоков Gunicorn (по умолчанию 8000, 2 и 4) |
 
 Файл `.env` в репозиторий не попадает (`.gitignore`), в репозитории лежит только образец `.env.example`.
 

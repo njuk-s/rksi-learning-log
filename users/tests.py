@@ -86,3 +86,11 @@ class CommandTests(TestCase):
         self.assertTrue(anna.check_password('Demo-pass-1'))
         self.assertEqual(User.objects.filter(username__in=['anna', 'boris']).count(), 2)
         self.assertTrue(self.client.login(username='boris', password='Demo-pass-1'))
+
+    def test_prestart_runs_everything_once(self):
+        env = {'DJANGO_SUPERUSER_USERNAME': 'boss', 'DJANGO_SUPERUSER_PASSWORD': 'Adm1n-pass!',
+               'SEED_DEMO': 'True', 'DEMO_PASSWORD': 'Demo-pass-1'}
+        with mock.patch.dict(os.environ, env):
+            call_command('prestart', stdout=StringIO())
+        self.assertTrue(User.objects.get(username='boss').is_superuser)
+        self.assertTrue(User.objects.filter(username='anna').exists())

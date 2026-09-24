@@ -29,5 +29,6 @@ services:
         value: "True"
       - key: DJANGO_HSTS_SECONDS
         value: "31536000"
+      # У бесплатного плана 0.1 CPU: один процесс с потоками быстрее просыпается.
       - key: WEB_CONCURRENCY
-        value: "2"
+        value: "1"
