@@ -49,3 +49,21 @@ jobs:
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz/ && break; sleep 2; done
           curl -fsS http://127.0.0.1:8000/ > /dev/null
           docker compose logs web
+
+  deploy:
+    # Разворачивает на Render только код из main, прошедший все проверки выше.
+    # Нужны секрет RENDER_API_KEY и переменная RENDER_SERVICE_ID; без них шаг пропускается.
+    needs: [test, docker]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}
+        run: |
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
+            echo "Render не настроен, деплой пропущен."; exit 0
+          fi
+          curl -fsS -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys"             -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json"             -d "{\"commitId\": \"$GITHUB_SHA\"}" > /dev/null
+          echo "Деплой $GITHUB_SHA запущен."

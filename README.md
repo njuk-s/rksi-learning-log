@@ -217,4 +217,7 @@ python manage.py test
 3. Заполните `DATABASE_URL` (строка из Neon), `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD` и `DEMO_PASSWORD`.
    `DJANGO_SECRET_KEY` Render сгенерирует сам.
 4. После сборки сайт доступен по адресу `https://<имя-сервиса>.onrender.com`; миграции, администратор и демо-данные
-   создаются при запуске контейнера. Каждый push в `main` разворачивается автоматически.
+   создаются при запуске контейнера.
+5. Автодеплой: добавьте в репозиторий секрет `RENDER_API_KEY` (ключ из Render → Account Settings → API Keys)
+   и переменную `RENDER_SERVICE_ID` (`srv-…` из адреса сервиса). Тогда после каждого push в `main` GitHub Actions
+   сначала прогоняет тесты и сборку Docker, и только при успехе запускает деплой на Render.
