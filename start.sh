@@ -9,4 +9,11 @@ python manage.py prestart
 # gthread: один процесс обслуживает несколько запросов потоками - этого
 # достаточно для слабого процессора бесплатного хостинга.
 # exec делает Gunicorn главным процессом контейнера.
-exec gunicorn learning_log.wsgi:application     --bind "0.0.0.0:${PORT:-8000}"     --preload     --worker-class gthread     --workers "${WEB_CONCURRENCY:-2}"     --threads "${GUNICORN_THREADS:-4}"     --timeout 60     --access-logfile -
+exec gunicorn learning_log.wsgi:application \
+    --bind "0.0.0.0:${PORT:-8000}" \
+    --preload \
+    --worker-class gthread \
+    --workers "${WEB_CONCURRENCY:-2}" \
+    --threads "${GUNICORN_THREADS:-4}" \
+    --timeout 60 \
+    --access-logfile -
