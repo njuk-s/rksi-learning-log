@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
     # Настройки сервера берутся из .env (см. .env.example).
     # Без .env проект тоже запустится - в режиме локальной проверки.
+    # Настройки берутся из .env рядом с этим файлом (образец - .env.example).
     env_file:
-      - path: .env
-        required: false
+      - .env
     environment:
       # База SQLite лежит на именованном томе и переживает пересоздание контейнера.
       SQLITE_PATH: ${SQLITE_PATH:-/app/data/db.sqlite3}

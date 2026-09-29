@@ -41,11 +41,16 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # HTTPS завершается на обратном прокси (Nginx, Render), он передаёт этот заголовок.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', False)
+# Открыт ли сайт по HTTPS. На учебном сервере он работает по адресу вида
+# http://192.168.1.11:20010/, и защищённые куки туда просто не дойдут - вход
+# перестанет работать. Поэтому там в .env ставится DJANGO_USE_HTTPS=False.
+USE_HTTPS = env_bool('DJANGO_USE_HTTPS', not DEBUG)
+
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', USE_HTTPS)
 SECURE_REDIRECT_EXEMPT = [r'^healthz/$']
-SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_HSTS_SECONDS', '0'))
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_HSTS_SECONDS', '31536000' if USE_HTTPS else '0'))
+SESSION_COOKIE_SECURE = USE_HTTPS
+CSRF_COOKIE_SECURE = USE_HTTPS
 SESSION_COOKIE_HTTPONLY = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = 'same-origin'

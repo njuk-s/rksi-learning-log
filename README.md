@@ -175,6 +175,39 @@ python manage.py test
 База SQLite хранится на именованном томе `learning_log_data` и не пропадает при `docker compose up -d --build`.
 Обновление: `git pull && docker compose up -d --build`.
 
+## Развёртывание на учебном сервере
+
+Сервер колледжа (`192.168.1.11`) раздаёт каждому проекту каталог и диапазон портов
+командой `newproject`, а сайт открывается по адресу `http://192.168.1.11:<порт>/` без HTTPS.
+Весь порядок действий собран в `deploy/setup.sh`. Подключитесь к серверу и запустите его:
+
+```sh
+ssh student@192.168.1.11
+curl -fsSL https://raw.githubusercontent.com/njuk-s/rksi-learning-log/main/deploy/setup.sh | sh
+```
+
+Скрипт для каждого проекта выполняет `newproject`, забирает код с GitHub, дописывает
+настройки в `.env`, собирает образ, ждёт ответа приложения и печатает готовые адреса
+вместе с паролями. Повторный запуск безопасен: ранее созданные ключ и пароли сохраняются.
+
+Ключевая настройка там - `DJANGO_USE_HTTPS=False`. Без неё Django помечает куки как
+предназначенные только для HTTPS, браузер по адресу с обычным `http://` их не сохраняет,
+и вход в аккаунт молча перестаёт работать.
+
+Один проект вместо трёх и своя фамилия в именах каталогов:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/njuk-s/rksi-learning-log/main/deploy/setup.sh | sh -s ivanov learning-log
+```
+
+Обновление после правок кода:
+
+```sh
+cd ~/projects/<фамилия>-learning-log
+git pull origin main
+docker compose up -d --build
+```
+
 ## Переменные окружения
 
 | Переменная | Обязательна | Назначение |
@@ -182,7 +215,8 @@ python manage.py test
 | `DJANGO_SECRET_KEY` | да, на сервере | Секретный ключ. При `DEBUG=False` проект не запустится с ключом по умолчанию |
 | `DJANGO_DEBUG` | да, на сервере | `False` на сервере; по умолчанию `True` |
 | `DJANGO_ALLOWED_HOSTS` | да | Домены через запятую |
-| `DJANGO_CSRF_TRUSTED_ORIGINS` | да, для HTTPS | `https://домен` через запятую |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | да | Полный адрес сайта: `https://домен` или `http://IP:порт` |
+| `DJANGO_USE_HTTPS` | нет | `False`, если сайт открыт по обычному `http`. Иначе куки помечаются как только для HTTPS и вход не работает. По умолчанию `True` при `DEBUG=False` |
 | `SQLITE_PATH` | нет | Путь к базе SQLite; в Docker `/app/data/db.sqlite3` |
 | `DATABASE_URL` | нет | PostgreSQL вместо SQLite, например `postgresql://user:pass@host/db?sslmode=require` |
 | `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD`, `DJANGO_SUPERUSER_EMAIL` | нет | Создать администратора при запуске |
@@ -191,7 +225,7 @@ python manage.py test
 | `DJANGO_HSTS_SECONDS` | нет | Срок HSTS в секундах, по умолчанию 0 |
 | `DJANGO_TIME_ZONE` | нет | Часовой пояс, по умолчанию `Europe/Moscow` |
 | `APP_BIND_IP`, `APP_PORT` | нет | На каком адресе и порту Compose публикует контейнер (по умолчанию `127.0.0.1:8000`) |
-| `PORT`, `WEB_CONCURRENCY`, `GUNICORN_THREADS` | нет | Порт, число процессов и потоков Gunicorn (по умолчанию 8000, 2 и 4) |
+| `PORT`, `WEB_CONCURRENCY`, `GUNICORN_THREADS` | нет | Порт, число процессов и потоков Gunicorn (по умолчанию 8000, 1 и 4) |
 
 Файл `.env` в репозиторий не попадает (`.gitignore`), в репозитории лежит только образец `.env.example`.
 
